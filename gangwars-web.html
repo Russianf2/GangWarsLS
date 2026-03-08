@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gang Wars LS — Descarga el Launcher</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red:        #CC1111;
+    --red-bright: #FF2222;
+    --red-glow:   #FF000040;
+    --red-dim:    #7A0A0A;
+    --bg:         #080808;
+    --bg2:        #0F0F0F;
+    --bg3:        #161616;
+    --border:     #222222;
+    --border-red: #3A0000;
+    --text:       #E8E8E8;
+    --muted:      #555;
+    --green:      #00FF88;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none; z-index: 100;
+    opacity: .25;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    height: 52px;
+    background: rgba(8,8,8,.92);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+  }
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 3px;
+    color: var(--red-bright);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-logo .ndot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--green); box-shadow: 0 0 8px var(--green);
+    animation: blink 2s infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+  .nav-server {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px; color: var(--muted);
+  }
+  .nav-server span { color: var(--text); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    padding: 80px 20px 60px;
+    text-align: center;
+  }
+
+  /* Grid de fondo animado */
+  .hero-grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      repeating-linear-gradient(90deg, transparent, transparent 80px, #CC000007 80px, #CC000007 81px),
+      repeating-linear-gradient(0deg,  transparent, transparent 80px, #CC000007 80px, #CC000007 81px);
+    animation: gridMove 25s linear infinite;
+  }
+  @keyframes gridMove { from { background-position: 0 0; } to { background-position: 80px 80px; } }
+
+  /* Resplandor central */
+  .hero-glow {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, #CC000018 0%, transparent 70%);
+    pointer-events: none;
+    animation: glowPulse 4s ease-in-out infinite;
+  }
+  @keyframes glowPulse { 0%,100%{opacity:.6;transform:translate(-50%,-50%) scale(1)} 50%{opacity:1;transform:translate(-50%,-50%) scale(1.1)} }
+
+  /* Calavera decorativa */
+  .hero-skull {
+    position: absolute; right: 8%; bottom: 10%;
+    font-size: 220px; opacity: .03;
+    filter: blur(2px); user-select: none;
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+
+  .hero-content { position: relative; z-index: 1; max-width: 800px; }
+
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #1A0000; border: 1px solid var(--border-red);
+    border-radius: 20px; padding: 4px 14px;
+    font-size: 11px; letter-spacing: 2px;
+    color: var(--red); font-family: 'Share Tech Mono', monospace;
+    margin-bottom: 24px;
+    animation: fadeUp .6s ease both;
+  }
+  .hero-badge .bdot { width: 5px; height: 5px; border-radius: 50%; background: var(--red); box-shadow: 0 0 6px var(--red); animation: blink 1.5s infinite; }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 10vw, 110px);
+    line-height: .95; letter-spacing: 4px;
+    color: #fff;
+    text-shadow: 0 0 80px var(--red-glow), 4px 4px 0 #000;
+    margin-bottom: 8px;
+    animation: fadeUp .6s .1s ease both;
+  }
+  .hero-title span { color: var(--red-bright); }
+
+  .hero-sub {
+    font-size: 18px; color: var(--muted);
+    font-weight: 500; letter-spacing: .5px;
+    margin-bottom: 48px; line-height: 1.5;
+    animation: fadeUp .6s .2s ease both;
+  }
+  .hero-sub strong { color: var(--text); }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Botón de descarga */
+  .btn-download {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: linear-gradient(135deg, #DD1111 0%, #880000 100%);
+    color: #fff; border: none; border-radius: 10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px; letter-spacing: 4px;
+    padding: 16px 48px;
+    cursor: pointer; text-decoration: none;
+    position: relative; overflow: hidden;
+    box-shadow: 0 6px 40px #CC000044, inset 0 1px 0 rgba(255,255,255,.1);
+    transition: transform .15s, box-shadow .2s;
+    animation: fadeUp .6s .3s ease both;
+  }
+  .btn-download::before {
+    content: ''; position: absolute; top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+    transition: left .5s;
+  }
+  .btn-download:hover::before { left: 100%; }
+  .btn-download:hover { transform: translateY(-3px); box-shadow: 0 12px 50px #CC000066; }
+  .btn-download:active { transform: translateY(0); }
+  .btn-download .dl-icon { font-size: 20px; }
+
+  .btn-note {
+    display: block; margin-top: 12px;
+    font-size: 12px; color: var(--muted);
+    font-family: 'Share Tech Mono', monospace;
+    animation: fadeUp .6s .4s ease both;
+  }
+
+  /* Stats row */
+  .hero-stats {
+    display: flex; gap: 40px; justify-content: center;
+    margin-top: 60px;
+    animation: fadeUp .6s .5s ease both;
+  }
+  .stat { text-align: center; }
+  .stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px; color: var(--red-bright);
+    line-height: 1;
+  }
+  .stat-label { font-size: 11px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+  .stat-div { width: 1px; background: var(--border); align-self: stretch; }
+
+  /* ── SECCIÓN INSTALACIÓN ── */
+  .install {
+    padding: 100px 20px;
+    position: relative;
+  }
+  .install::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--red-dim), transparent);
+  }
+
+  .section-label {
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px; letter-spacing: 3px;
+    color: var(--red); text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    text-align: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 5vw, 56px);
+    letter-spacing: 3px; color: #fff;
+    margin-bottom: 60px;
+  }
+  .section-title span { color: var(--red-bright); }
+
+  /* Steps */
+  .steps {
+    max-width: 860px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 16px;
+  }
+
+  .step {
+    display: flex; gap: 24px; align-items: flex-start;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    position: relative; overflow: hidden;
+    transition: border-color .2s, transform .2s;
+  }
+  .step::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(180deg, var(--red), var(--red-dim));
+    opacity: 0; transition: opacity .2s;
+  }
+  .step:hover { border-color: var(--border-red); transform: translateX(4px); }
+  .step:hover::before { opacity: 1; }
+
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px; line-height: 1;
+    color: var(--border-red);
+    flex-shrink: 0; width: 44px; text-align: center;
+    transition: color .2s;
+  }
+  .step:hover .step-num { color: var(--red); }
+
+  .step-body { flex: 1; }
+  .step-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 1.5px;
+    color: var(--text); margin-bottom: 6px;
+  }
+  .step-desc {
+    font-size: 14px; color: var(--muted);
+    line-height: 1.7; font-weight: 500;
+  }
+  .step-desc strong { color: var(--text); }
+  .step-desc code {
+    font-family: 'Share Tech Mono', monospace;
+    background: #1A0000; border: 1px solid var(--border-red);
+    color: var(--red-bright); padding: 2px 8px;
+    border-radius: 4px; font-size: 12px;
+  }
+
+  /* Warning box */
+  .warn-box {
+    max-width: 860px; margin: 24px auto 0;
+    background: #0D0800;
+    border: 1px solid #3A2000;
+    border-radius: 10px; padding: 16px 22px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px; color: #AA7700;
+    font-weight: 600;
+  }
+  .warn-box .wicon { font-size: 18px; }
+
+  /* ── REQUISITOS ── */
+  .reqs {
+    padding: 80px 20px;
+    position: relative;
+  }
+  .reqs::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+
+  .reqs-grid {
+    max-width: 860px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+  }
+  .req-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px;
+    transition: border-color .2s;
+  }
+  .req-card:hover { border-color: var(--border-red); }
+  .req-icon { font-size: 24px; margin-bottom: 10px; }
+  .req-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; letter-spacing: .3px; }
+  .req-val { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--muted); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 30px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 12px; color: var(--muted);
+  }
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px; letter-spacing: 2px; color: var(--red-dim);
+  }
+  .footer-server {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+  }
+
+  @media (max-width: 640px) {
+    nav { padding: 0 20px; }
+    .hero-stats { gap: 20px; }
+    .reqs-grid { grid-template-columns: 1fr; }
+    .step { flex-direction: column; gap: 12px; }
+    footer { flex-direction: column; gap: 10px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="nav-logo">
+    <span class="ndot"></span>
+    GANG WARS LS
+  </div>
+  <div class="nav-server">
+    Servidor: <span>135.148.164.122:30660</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-skull">💀</div>
+
+  <div class="hero-content">
+    <div class="hero-badge"><span class="bdot"></span> SERVIDOR ACTIVO — SA-MP 0.3.7</div>
+
+    <h1 class="hero-title">GANG WARS <span>LS</span></h1>
+
+    <p class="hero-sub">
+      El servidor de pandillas más intenso de Los Santos.<br>
+      <strong>5 pandillas, 16 territorios, guerra constante.</strong>
+    </p>
+
+    <a href="#" class="btn-download">
+      <span class="dl-icon">⬇</span>
+      DESCARGAR LAUNCHER
+    </a>
+    <span class="btn-note">GangWars-Launcher.exe · Windows 64-bit · ~85MB</span>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-val">5</div>
+        <div class="stat-label">Pandillas</div>
+      </div>
+      <div class="stat-div"></div>
+      <div class="stat">
+        <div class="stat-val">16</div>
+        <div class="stat-label">Territorios</div>
+      </div>
+      <div class="stat-div"></div>
+      <div class="stat">
+        <div class="stat-val">50</div>
+        <div class="stat-label">Jugadores</div>
+      </div>
+      <div class="stat-div"></div>
+      <div class="stat">
+        <div class="stat-val">24/7</div>
+        <div class="stat-label">Online</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTALACIÓN -->
+<section class="install" id="instalar">
+  <div class="section-label">// guía de instalación</div>
+  <h2 class="section-title">CÓMO <span>INSTALAR</span></h2>
+
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <div class="step-title">Descarga el archivo</div>
+        <div class="step-desc">
+          Haz clic en el botón <strong>DESCARGAR LAUNCHER</strong> de arriba. Se descargará un archivo <code>.zip</code> que contiene el launcher y la carpeta del juego preconfigurada.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <div class="step-title">Descomprime el archivo</div>
+        <div class="step-desc">
+          Haz clic derecho sobre el <code>.zip</code> descargado y selecciona <strong>"Extraer aquí"</strong> o usa WinRAR / 7-Zip. Verás una carpeta llamada <code>GangWars LS</code>.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <div class="step-title">Mueve la carpeta a C:\</div>
+        <div class="step-desc">
+          Mueve la carpeta <code>GangWars LS</code> directamente al disco <strong>C:\</strong> para que quede en la ruta exacta <code>C:\GangWars LS</code>. <strong>No la pongas dentro de otras carpetas.</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <div class="step-title">Abre el Launcher</div>
+        <div class="step-desc">
+          Dentro de <code>C:\GangWars LS</code> encontrarás el archivo <code>GangWars-Launcher.exe</code>. Ábrelo, escribe tu nombre de usuario y pulsa <strong>▶ JUGAR</strong>. El juego se conectará automáticamente al servidor.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <div class="step-title">¡Elige tu pandilla y a jugar!</div>
+        <div class="step-desc">
+          Al entrar al servidor usa el comando <code>/joingang</code> para elegir entre <strong>Grove Street Families, Ballas, Aztecas, Vagos</strong> o <strong>LSPD</strong>. ¡Conquista los territorios de Los Santos!
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="warn-box">
+    <span class="wicon">⚠️</span>
+    <span>¿Tienes varios GTA San Andreas instalados? No importa — el launcher <strong>siempre usa C:\GangWars LS</strong> y nunca toca tus otras instalaciones.</span>
+  </div>
+</section>
+
+<!-- REQUISITOS -->
+<section class="reqs">
+  <div class="section-label">// requisitos</div>
+  <h2 class="section-title">REQUISITOS DEL <span>SISTEMA</span></h2>
+  <div class="reqs-grid">
+    <div class="req-card">
+      <div class="req-icon">🖥️</div>
+      <div class="req-title">Sistema Operativo</div>
+      <div class="req-val">Windows 7 / 8 / 10 / 11<br>64-bit</div>
+    </div>
+    <div class="req-card">
+      <div class="req-icon">💾</div>
+      <div class="req-title">Espacio en disco</div>
+      <div class="req-val">~4 GB libres en C:\</div>
+    </div>
+    <div class="req-card">
+      <div class="req-icon">🌐</div>
+      <div class="req-title">Conexión</div>
+      <div class="req-val">Internet estable<br>Puerto 30660 UDP</div>
+    </div>
+    <div class="req-card">
+      <div class="req-icon">🎮</div>
+      <div class="req-title">SA-MP</div>
+      <div class="req-val">SA-MP 0.3.7-R3<br>Incluido en el zip</div>
+    </div>
+    <div class="req-card">
+      <div class="req-icon">⚡</div>
+      <div class="req-title">RAM</div>
+      <div class="req-val">Mínimo 2 GB<br>Recomendado 4 GB</div>
+    </div>
+    <div class="req-card">
+      <div class="req-icon">🛡️</div>
+      <div class="req-title">Antivirus</div>
+      <div class="req-val">Agrega excepción a<br>C:\GangWars LS</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">GANG WARS LOS SANTOS</div>
+  <div class="footer-server">135.148.164.122:30660 · SA-MP 0.3.7</div>
+</footer>
+
+</body>
+</html>
